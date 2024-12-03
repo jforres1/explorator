@@ -1,20 +1,26 @@
-using System.Collections;
+//using System;
+//using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cell : MonoBehaviour
+public class Cell
 {
     public bool collapsed;
     public Tile[] options;
 
-    public void CreateCell(bool state, Tile[] tiles)
+    public Cell(bool state, Tile[] tiles)
     {
-        this.collapsed = state;
-        this.options = tiles;
+        collapsed = state;
+        options = tiles;
     }
-
-    public void RegenerateCell(Tile[] tiles)
+    public bool Collapsed
     {
-        this.options = tiles;
+        get { return collapsed; }
+        set { collapsed = value; }
+    }
+    public Tile[] Options
+    {
+        get { return options; }
+        set { options = value; }
     }
 }

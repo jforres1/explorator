@@ -1,170 +1,218 @@
-using System;
-using System.Collections;
+//using System;
+//using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.Mathematics;
+//using Unity.Mathematics;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class WaveFunction : MonoBehaviour
 {
-    public int length;
-    public int height;
-    public Tile[] tileObjects;
-    public List<Cell> gridElements;
-    public Cell cellObject;
-
+    public bool debug;
+    public Vector2Int size;
+    public Tile[] tileSet;
+    Cell[,] map;
     int iterations;
 
+    /*On load, initialize a new array of cells and a sorted list to act as a priority queue.
+    */
     void Awake()
     {
-        gridElements = new List<Cell>();
-        InitializeGrid();
+        if (debug) Debug.Log("Beginning Generation\n");
+        map = new Cell[size.x, size.y];
+        iterations = 0;
+        Generate();
     }
-
+    void Generate()
+    {
+        InitializeGrid();
+        //CollapseGrid will return false if the generation fails, so we can restart generation.
+        if (!CollapseGrid())
+        {
+            iterations++;
+            if (debug) Debug.Log("Beginning Iteration " + iterations + "\n");
+            Generate();
+        }
+        else
+        {
+            InstantiateGrid();
+        }
+    }
+    void InstantiateGrid()
+    {
+        for (int i = 0; i < size.x; i++)
+        {
+            for (int j = 0; j < size.y; j++)
+            {
+                Instantiate(map[i, j].Options[0], new Vector2(i, j), Quaternion.identity);
+            }
+        }
+    }
+    /*To initialize the grid, iterate through the grid length and height.
+    *Create a new cell for each i, j entry, and add each cell to the grid and list.
+    */
     void InitializeGrid()
     {
-        for (int x = 0; x < length; x++)
+        for (int i = 0; i < size.x; i++)
         {
-            for (int y = 0; y < height; y++)
+            for (int j = 0; j < size.y; j++)
             {
-                Cell cell = Instantiate(cellObject, new Vector2(x, y), Quaternion.identity);
-                cell.CreateCell(false, tileObjects);
-                gridElements.Add(cell);
+                Cell cell = new Cell(false, tileSet);
+                map[i, j] = cell;
             }
         }
-        StartCoroutine(CheckEntropy());
     }
-
-    IEnumerator CheckEntropy()
+    /*Remove the first element of the list, which will be the element with the smallest key each time.
+    */
+    bool CollapseGrid()
     {
-        List<Cell> tempGrid = new List<Cell>(gridElements);
-        tempGrid.RemoveAll(c => c.collapsed);
-        tempGrid.Sort((a, b) => { return a.options.Length - b.options.Length; });
-        int arrLength = tempGrid[0].options.Length;
-        int stopIndex = default;
-        for (int i = 1; i < tempGrid.Count; i++)
+        bool finished = false;
+        bool success = true;
+        while (!finished && success)
         {
-            if (tempGrid[i].options.Length > arrLength)
+            //Get an element that is not collapsed with the lowest entropy
+            //If there is no such element we can finish
+            Vector2Int cellLocation = GetLowestEntropy();
+            if (cellLocation.x == size.x && cellLocation.y == size.y)
             {
-                stopIndex = i;
-                break;
+                if (debug) Debug.Log("Generation Succeeded\n");
+                finished = true;
+            }
+            //If generation fails and there is a cell with no possible options left
+            else if (cellLocation.x == -1 && cellLocation.y == -1)
+            {
+                if (debug) Debug.Log("Generation Failed...\n");
+                success = false;
+            }
+            else
+            {
+                //Perform operations on lowest entropy element
+                Cell target = map[cellLocation.x, cellLocation.y];
+                Tile selection = target.Options[Random.Range(0, target.Options.Length)];
+                target.Collapsed = true;
+                target.Options = new Tile[] { selection };
+                PropagateChange(cellLocation);
             }
         }
-        if (stopIndex > 0)
-        {
-            tempGrid.RemoveRange(stopIndex, tempGrid.Count - stopIndex);
-        }
-        yield return new WaitForSeconds(0.01f);
-        CollapseCell(tempGrid);
+        return success;
     }
-    void CollapseCell(List<Cell> tempGrid)
-    {
-        int randIndex = UnityEngine.Random.Range(0, tempGrid.Count);
-        Cell target = tempGrid[randIndex];
-        target.collapsed = true;
-        Tile selectedTile = target.options[UnityEngine.Random.Range(0, target.options.Length)];
-        target.options = new Tile[] { selectedTile };
-        Tile foundTile = target.options[0];
-        Instantiate(foundTile, target.transform.position, Quaternion.identity);
-        UpdateGeneration();
-    }
-    void UpdateGeneration()
-    {
-        List<Cell> newCell = new List<Cell>(gridElements);
 
-        for (int x = 0; x < length; x++)
+    Vector2Int GetLowestEntropy()
+    {
+        List<Vector2Int> possibleSpaces = new List<Vector2Int>();
+        Cell temp = new Cell(false, tileSet);
+        int lowest = tileSet.Length;
+        //iterate through each cell in the map, adding its location to the list of possible spaces if it is one of the lowest entropies.
+        for (int i = 0; i < size.x; i++)
         {
-            for (int y = 0; y < height; y++)
+            for (int j = 0; j < size.y; j++)
             {
-                var index = x + y * height;
-                if (gridElements[index].collapsed)
+                temp = map[i, j];
+                int count = temp.Options.Length;
+                if (count < lowest && !temp.Collapsed)
                 {
-                    newCell[index] = gridElements[index];
+                    //if there is a failure in generation and there are no more options we can stop here
+                    //Return (-1, -1) if there are no possible values.
+                    if (count == 0) return new Vector2Int(-1, -1);
+                    //otherwise
+                    possibleSpaces.Clear();
+                    possibleSpaces.Add(new Vector2Int(i, j));
+                    lowest = count;
                 }
-                else
+                else if (count == lowest && !temp.Collapsed)
                 {
-                    List<Tile> options = new List<Tile>();
-                    foreach (Tile t in gridElements[index].options)
-                    {
-                        options.Add(t);
-                    }
-
-                    if (y > 0)
-                    {
-                        Cell south = gridElements[x + (y - 1) * length];
-                        List<Tile> validOptions = new List<Tile>();
-                        foreach (Tile possibleOptions in south.options)
-                        {
-                            var valOption = Array.FindIndex(tileObjects, obj => obj == possibleOptions);
-                            var valid = tileObjects[valOption].southNeighbors;
-
-                            validOptions = validOptions.Concat(valid).ToList();
-                        }
-                        CheckValidity(options, validOptions);
-                    }
-                    if (y < height - 1)
-                    {
-                        Cell north = gridElements[x + (y + 1) * length];
-                        List<Tile> validOptions = new List<Tile>();
-                        foreach (Tile possibleOptions in north.options)
-                        {
-                            var valOption = Array.FindIndex(tileObjects, obj => obj == possibleOptions);
-                            var valid = tileObjects[valOption].northNeighbors;
-
-                            validOptions = validOptions.Concat(valid).ToList();
-                        }
-                        CheckValidity(options, validOptions);
-                    }
-                    if (x > 0)
-                    {
-                        Cell east = gridElements[x - 1 + y * length];
-                        List<Tile> validOptions = new List<Tile>();
-                        foreach (Tile possibleOptions in east.options)
-                        {
-                            var valOption = Array.FindIndex(tileObjects, obj => obj == possibleOptions);
-                            var valid = tileObjects[valOption].eastNeighbors;
-
-                            validOptions = validOptions.Concat(valid).ToList();
-                        }
-                        CheckValidity(options, validOptions);
-                    }
-                    if (x < length - 1)
-                    {
-                        Cell west = gridElements[x + 1 + y * length];
-                        List<Tile> validOptions = new List<Tile>();
-                        foreach (Tile possibleOptions in west.options)
-                        {
-                            var valOption = Array.FindIndex(tileObjects, obj => obj == possibleOptions);
-                            var valid = tileObjects[valOption].westNeighbors;
-
-                            validOptions = validOptions.Concat(valid).ToList();
-                        }
-                        CheckValidity(options, validOptions);
-                    }
-                    Tile[] newTileList = new Tile[options.Count];
-                    for (int i = 0; i < options.Count; i++)
-                    {
-                        newTileList[i] = options[i];
-                    }
-                    newCell[index].RegenerateCell(newTileList);
+                    possibleSpaces.Add(new Vector2Int(i, j));
                 }
             }
         }
-        gridElements = newCell;
-        iterations++;
-        if (iterations < length * height)
+        //Return one position from the list of possible options.
+        //Return a vector out of bounds if every position has been solved.
+        if (possibleSpaces.Count > 0)
         {
-            StartCoroutine(CheckEntropy());
+            return possibleSpaces[Random.Range(0, possibleSpaces.Count)];
+        }
+        else
+        {
+            return new Vector2Int(size.x, size.y);
         }
     }
-    void CheckValidity(List<Tile> optionList, List<Tile> validOption)
+
+    void PropagateChange(Vector2Int location)
     {
-        for (int x = optionList.Count - 1; x >= 0; x--)
+        Queue<Vector2Int> q = new Queue<Vector2Int>();
+        //Enqueue the surrounding nodes on the first pass
+        int x = location.x;
+        int y = location.y;
+        if (x > 0 && !map[x - 1, y].Collapsed) q.Enqueue(new Vector2Int(x - 1, y));
+        if (x < size.x - 1 && !map[x + 1, y].Collapsed) q.Enqueue(new Vector2Int(x + 1, y));
+        if (y > 0 && !map[x, y - 1].Collapsed) q.Enqueue(new Vector2Int(x, y - 1));
+        if (y < size.y - 1 && !map[x, y + 1].Collapsed) q.Enqueue(new Vector2Int(x, y + 1));
+
+        while (q.Count != 0)
         {
-            var element = optionList[x];
-            if (!validOption.Contains(element))
+            Vector2Int position = q.Dequeue();
+            x = position.x;
+            y = position.y;
+            Cell target = map[x, y];
+            //Get the initial length of the cell's option list
+            int oldCount = target.Options.Length;
+            //Adjust the target's options list
+            List<Tile> newTileSet = new List<Tile>();
+            foreach (Tile t in target.Options)
             {
-                optionList.RemoveAt(x);
+                bool flag = true;
+                Tile[] options;
+
+                //If a tile does not match any of the options of its neighbors, remove it from the list.
+                //Ignore the cells on the boarders
+                if (x > 0 && flag)
+                {
+                    flag = false;
+                    options = map[x - 1, y].Options;
+                    foreach (Tile o in options)
+                    {
+                        if (o.eastConnectionType.Equals(t.westConnectionType)) flag = true;
+                    }
+                }
+                if (x < size.x - 1 && flag)
+                {
+                    flag = false;
+                    options = map[x + 1, y].Options;
+                    foreach (Tile o in options)
+                    {
+                        if (o.westConnectionType.Equals(t.eastConnectionType)) flag = true;
+                    }
+                }
+                if (y > 0 && flag)
+                {
+                    flag = false;
+                    options = map[x, y - 1].Options;
+                    foreach (Tile o in options)
+                    {
+                        if (o.northConnectionType.Equals(t.southConnectionType)) flag = true;
+                    }
+                }
+                string northType = t.northConnectionType;
+                if (y < size.y - 1 && flag)
+                {
+                    flag = false;
+                    options = map[x, y + 1].Options;
+                    foreach (Tile o in options)
+                    {
+                        if (o.southConnectionType.Equals(t.northConnectionType)) flag = true;
+                    }
+                }
+
+                if (flag) newTileSet.Add(t);
+            }
+            target.Options = newTileSet.ToArray();
+
+            //If the current length is less than the old length, enqueue its surrounding nodes
+            if (oldCount < target.Options.Length)
+            {
+                if (x > 0 && !map[x - 1, y].Collapsed) q.Enqueue(new Vector2Int(x - 1, y));
+                if (x < size.x - 1 && !map[x + 1, y].Collapsed) q.Enqueue(new Vector2Int(x + 1, y));
+                if (y > 0 && !map[x, y - 1].Collapsed) q.Enqueue(new Vector2Int(x, y - 1));
+                if (y < size.y - 1 && !map[x, y + 1].Collapsed) q.Enqueue(new Vector2Int(x, y + 1));
             }
         }
     }

@@ -129,7 +129,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1181057375}
   - component: {fileID: 1181057374}
-  - component: {fileID: 1181057373}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -137,14 +136,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &1181057373
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1181057372}
-  m_Enabled: 1
 --- !u!20 &1181057374
 Camera:
   m_ObjectHideFlags: 0
@@ -361,6 +352,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      propertyPath: debug
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
       propertyPath: height
       value: 20
       objectReference: {fileID: 0}
@@ -369,13 +364,81 @@ PrefabInstance:
       value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      propertyPath: size.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      propertyPath: size.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
       propertyPath: cellObject
       value: 
       objectReference: {fileID: 5165251367614429137, guid: 06aa0699d7b38394284321126924a0a9, type: 3}
     - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      propertyPath: gridHeight
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      propertyPath: gridLength
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      propertyPath: tileSet.Array.size
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      propertyPath: 'tileSet.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1416913301780378832, guid: 1d18f7ef376fad444beec3fc2f56dda4, type: 3}
+    - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      propertyPath: 'tileSet.Array.data[1]'
+      value: 
+      objectReference: {fileID: 4049732057954280445, guid: 9f5321e6472dea944b5a3a7fe17233f2, type: 3}
+    - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      propertyPath: 'tileSet.Array.data[2]'
+      value: 
+      objectReference: {fileID: 5865831666502958840, guid: bd11d1f7b2b96e24b95cb8ca4467c43e, type: 3}
+    - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      propertyPath: 'tileSet.Array.data[3]'
+      value: 
+      objectReference: {fileID: -5977564486043366626, guid: 33658b1817189e94c95d18d29cc4ee16, type: 3}
+    - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      propertyPath: 'tileSet.Array.data[4]'
+      value: 
+      objectReference: {fileID: -9002761418160380454, guid: 1bcda2e58a824544ab796962239f675f, type: 3}
+    - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      propertyPath: 'tileSet.Array.data[5]'
+      value: 
+      objectReference: {fileID: -314397966496301690, guid: 62da8a5965578194ca8ad2b0881a9280, type: 3}
+    - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      propertyPath: 'tileSet.Array.data[6]'
+      value: 
+      objectReference: {fileID: 1709893826742262330, guid: 3a3870258daf9954abd7319b917c9392, type: 3}
+    - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      propertyPath: 'tileSet.Array.data[7]'
+      value: 
+      objectReference: {fileID: 5263228334001304019, guid: 98c65a3d384e16141b587fc59cbd3df2, type: 3}
+    - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      propertyPath: 'tileSet.Array.data[8]'
+      value: 
+      objectReference: {fileID: 4129092243794700300, guid: 734b394b6410bf44fb6c055c9dbb7615, type: 3}
+    - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      propertyPath: 'tileSet.Array.data[9]'
+      value: 
+      objectReference: {fileID: 1743718961183649324, guid: 30472fd14c651ed44b930fb6f2db6131, type: 3}
+    - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
       propertyPath: tileObjects.Array.size
       value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      propertyPath: 'tileSet.Array.data[10]'
+      value: 
+      objectReference: {fileID: -152267685665990890, guid: b5412d19eddb1ff4eaceabe0e7e7e890, type: 3}
+    - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      propertyPath: 'tileSet.Array.data[11]'
+      value: 
+      objectReference: {fileID: 3764455217556231395, guid: 8cb4b94b000695b4d8ed4a13c4c0c6f1, type: 3}
     - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
       propertyPath: 'tileObjects.Array.data[0]'
       value: 
