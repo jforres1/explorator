@@ -5,6 +5,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+/*TODO: Separate the image processing into another class
+*Change the tile[] in the Cell class to hold int indexes of the tileset for space and speed
+*Replace iteration generation system with a save state stack
+*Create more tilesets
+*/
 public class WaveFunction : MonoBehaviour
 {
     public bool debug;

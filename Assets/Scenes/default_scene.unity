@@ -365,11 +365,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
       propertyPath: size.x
-      value: 10
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
       propertyPath: size.y
-      value: 10
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
       propertyPath: cellObject
@@ -386,7 +386,7 @@ PrefabInstance:
     - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
       propertyPath: sampleImage
       value: 
-      objectReference: {fileID: 2800000, guid: 384f648cc1eb47447bd42ec55ffb6f33, type: 3}
+      objectReference: {fileID: 2800000, guid: f199359fccdcd8b4e9f8eb9c9c4dc78b, type: 3}
     - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
       propertyPath: useSampleImage
       value: 1
