@@ -14,14 +14,8 @@ public class WaveFunction : MonoBehaviour
 {
     public bool debug;
     public Vector2Int size;
-    public Tile[] tileSetDefault;
     public int maximumIterations;
-    public bool useSampleImage;
-    public Texture2D sampleImage;
-    public Tile[] tileSetType0;
-    public Tile[] tileSetType1;
-    public Tile[] tileSetType2;
-    public Tile[] tileSetType3;
+    Tile[] defaultTileSet;
     Cell[,] map;
     int iterations;
 
@@ -32,12 +26,13 @@ public class WaveFunction : MonoBehaviour
         if (debug) Debug.Log("Beginning Generation\n");
         map = new Cell[size.x, size.y];
         iterations = 0;
+        TileSetOptions optionSet = gameObject.GetComponent<TileSetOptions>();
+        defaultTileSet = optionSet.defaultTileSet;
         Generate();
     }
     void Generate()
     {
         InitializeGrid();
-        if (sampleImage && useSampleImage) SetStatesFromImage();
         //CollapseGrid will return false if the generation fails, so we can restart generation.
         if (!CollapseGrid())
         {
@@ -76,30 +71,11 @@ public class WaveFunction : MonoBehaviour
         {
             for (int j = 0; j < size.y; j++)
             {
-                Cell cell = new Cell(false, tileSetDefault);
+                Cell cell = new Cell(false, defaultTileSet);
 
                 map[i, j] = cell;
             }
         }
-    }
-
-    /*Set states from the supplied image.
-    *
-    */
-    void SetStatesFromImage()
-    {
-        int[,] typeMap = GetTileTypeFromImage(sampleImage);
-
-        for (int i = 0; i < size.x; i++)
-        {
-            for (int j = 0; j < size.y; j++)
-            {
-                Tile[] t = TileSetSelector(typeMap[i, j]);
-                map[i, j].Options = t;
-            }
-        }
-        //Update the grid to propagate the restrictions in the added tilesets
-        PropagateChange(new Vector2Int(0, 0));
     }
 
     /*Remove the first element of the list, which will be the element with the smallest key each time.
@@ -140,8 +116,8 @@ public class WaveFunction : MonoBehaviour
     Vector2Int GetLowestEntropy()
     {
         List<Vector2Int> possibleSpaces = new List<Vector2Int>();
-        Cell temp = new Cell(false, tileSetDefault);
-        int lowest = tileSetDefault.Length;
+        Cell temp = new Cell(false, defaultTileSet);
+        int lowest = defaultTileSet.Length;
         //iterate through each cell in the map, adding its location to the list of possible spaces if it is one of the lowest entropies.
         for (int i = 0; i < size.x; i++)
         {
@@ -256,40 +232,5 @@ public class WaveFunction : MonoBehaviour
                 if (y < size.y - 1 && !map[x, y + 1].Collapsed) q.Enqueue(new Vector2Int(x, y + 1));
             }
         }
-    }
-    int[,] GetTileTypeFromImage(Texture2D image)
-    {
-        Color[] imageData = image.GetPixels();
-        //Create a new texture that's size matches the requested size of the map.
-        int[,] typeArray = new int[size.x, size.y];
-        //Find the number of pixels in the source image for each pixel in the destination image.
-        int xBlockSize = image.width / size.x;
-        int yBlockSize = image.height / size.y;
-
-        for (int i = 0; i < size.x; i++)
-        {
-            for (int j = 0; j < size.y; j++)
-            {
-                //Set each pixel in the return texture to a random color in the corresponding range in the input texture.
-                Color pixelColor = imageData[(i + Random.Range(0, xBlockSize)) + (j + Random.Range(0, yBlockSize)) * xBlockSize];
-                float g = pixelColor.grayscale;
-                int type = 0;
-                //get the catagory based on the greyscale value
-                if (g > 0 && (g < 0.25 || Mathf.Approximately(g, 0.25f))) type = 0;
-                if (g > 0.25 && (g < 0.5 || Mathf.Approximately(g, 0.5f))) type = 1;
-                if (g > 0.5 && (g < 0.75 || Mathf.Approximately(g, 0.75f))) type = 2;
-                if (g > 0.75 && (g < 1 || Mathf.Approximately(g, 1f))) type = 3;
-                typeArray[i, j] = type;
-            }
-        }
-        return typeArray;
-    }
-    Tile[] TileSetSelector(int type)
-    {
-        if (type == 0) return tileSetType0;
-        if (type == 1) return tileSetType1;
-        if (type == 2) return tileSetType2;
-        if (type == 3) return tileSetType3;
-        else return tileSetDefault;
     }
 }

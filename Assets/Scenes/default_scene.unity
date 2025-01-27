@@ -202,6 +202,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1942535655 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1565312569354898084, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+  m_PrefabInstance: {fileID: 1688960327492001769}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1942535659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942535655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95fee9fe136f2ea45a3de36bccae45ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultTileSet:
+  - {fileID: 1416913301780378832, guid: 1d18f7ef376fad444beec3fc2f56dda4, type: 3}
+  - {fileID: 4049732057954280445, guid: 9f5321e6472dea944b5a3a7fe17233f2, type: 3}
+  - {fileID: -152267685665990890, guid: b5412d19eddb1ff4eaceabe0e7e7e890, type: 3}
+  - {fileID: -5977564486043366626, guid: 33658b1817189e94c95d18d29cc4ee16, type: 3}
+  - {fileID: -9002761418160380454, guid: 1bcda2e58a824544ab796962239f675f, type: 3}
+  - {fileID: 5865831666502958840, guid: bd11d1f7b2b96e24b95cb8ca4467c43e, type: 3}
+  - {fileID: -314397966496301690, guid: 62da8a5965578194ca8ad2b0881a9280, type: 3}
+  - {fileID: 5263228334001304019, guid: 98c65a3d384e16141b587fc59cbd3df2, type: 3}
+  - {fileID: 4129092243794700300, guid: 734b394b6410bf44fb6c055c9dbb7615, type: 3}
+  - {fileID: 1709893826742262330, guid: 3a3870258daf9954abd7319b917c9392, type: 3}
+  - {fileID: 1743718961183649324, guid: 30472fd14c651ed44b930fb6f2db6131, type: 3}
+  - {fileID: 3764455217556231395, guid: 8cb4b94b000695b4d8ed4a13c4c0c6f1, type: 3}
 --- !u!1 &2043125349
 GameObject:
   m_ObjectHideFlags: 0
@@ -365,11 +395,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
       propertyPath: size.x
-      value: 8
+      value: 64
       objectReference: {fileID: 0}
     - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
       propertyPath: size.y
-      value: 8
+      value: 64
       objectReference: {fileID: 0}
     - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
       propertyPath: cellObject
@@ -386,14 +416,14 @@ PrefabInstance:
     - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
       propertyPath: sampleImage
       value: 
-      objectReference: {fileID: 2800000, guid: f199359fccdcd8b4e9f8eb9c9c4dc78b, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
       propertyPath: useSampleImage
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
       propertyPath: maximumIterations
-      value: 10
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 9116167418267618281, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
       propertyPath: tileSet.Array.size
@@ -662,7 +692,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1565312569354898084, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1942535659}
   m_SourcePrefab: {fileID: 100100000, guid: 4faa4e975bdf48b48bbf465f738b35b5, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

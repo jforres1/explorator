@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2206126251590857742}
   - component: {fileID: 9116167418267618281}
+  - component: {fileID: 1650145262460249746}
   m_Layer: 0
   m_Name: Generator
   m_TagString: Untagged
@@ -44,20 +45,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f329e7456f16df49b50b0120df65ab6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  length: 20
-  height: 20
-  tileObjects:
-  - {fileID: 1416913301780378832, guid: 1d18f7ef376fad444beec3fc2f56dda4, type: 3}
-  - {fileID: 4049732057954280445, guid: 9f5321e6472dea944b5a3a7fe17233f2, type: 3}
-  - {fileID: 5865831666502958840, guid: bd11d1f7b2b96e24b95cb8ca4467c43e, type: 3}
-  - {fileID: -5977564486043366626, guid: 33658b1817189e94c95d18d29cc4ee16, type: 3}
-  - {fileID: -9002761418160380454, guid: 1bcda2e58a824544ab796962239f675f, type: 3}
-  - {fileID: -314397966496301690, guid: 62da8a5965578194ca8ad2b0881a9280, type: 3}
-  - {fileID: 1709893826742262330, guid: 3a3870258daf9954abd7319b917c9392, type: 3}
-  - {fileID: 5263228334001304019, guid: 98c65a3d384e16141b587fc59cbd3df2, type: 3}
-  - {fileID: 4129092243794700300, guid: 734b394b6410bf44fb6c055c9dbb7615, type: 3}
-  - {fileID: 1743718961183649324, guid: 30472fd14c651ed44b930fb6f2db6131, type: 3}
-  - {fileID: -152267685665990890, guid: b5412d19eddb1ff4eaceabe0e7e7e890, type: 3}
-  - {fileID: 3764455217556231395, guid: 8cb4b94b000695b4d8ed4a13c4c0c6f1, type: 3}
-  gridElements: []
-  cellObject: {fileID: 5165251367614429137, guid: 06aa0699d7b38394284321126924a0a9, type: 3}
+  debug: 0
+  size: {x: 0, y: 0}
+  tileSetDefault: []
+  maximumIterations: 0
+--- !u!114 &1650145262460249746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565312569354898084}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ead643ba0b414d4caa0fb8269b667b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  image: {fileID: 0}
+  size: {x: 0, y: 0}
+  colorCount: 0
