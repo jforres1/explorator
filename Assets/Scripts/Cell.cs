@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class Cell
 {
-    public bool collapsed;
-    public Tile[] options;
+    bool collapsed;
+    Tile[] options;
 
     public Cell(bool state, Tile[] tiles)
     {
