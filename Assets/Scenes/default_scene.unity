@@ -232,6 +232,10 @@ MonoBehaviour:
   - {fileID: 1709893826742262330, guid: 3a3870258daf9954abd7319b917c9392, type: 3}
   - {fileID: 1743718961183649324, guid: 30472fd14c651ed44b930fb6f2db6131, type: 3}
   - {fileID: 3764455217556231395, guid: 8cb4b94b000695b4d8ed4a13c4c0c6f1, type: 3}
+  tileSet1: []
+  tileSet2: []
+  tileSet3: []
+  tileSet4: []
 --- !u!1 &2043125349
 GameObject:
   m_ObjectHideFlags: 0

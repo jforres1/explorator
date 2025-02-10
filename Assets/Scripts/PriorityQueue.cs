@@ -104,6 +104,10 @@ public class PriorityQueue
             childB = (2 * index) + 2;
         }
     }
+    public Vector2Int Peek()
+    {
+        return nodes[0].Position;
+    }
     public void Remove(Vector2Int target)
     {
         int index = 0;

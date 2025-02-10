@@ -19,8 +19,7 @@ public class WaveFunction : MonoBehaviour
     Tile[] defaultTileSet;
     Cell[,] map;
     PriorityQueue pq;
-
-    //Stack<SaveState> saveStack;
+    Stack<SaveState> saveStack;
     int iterations;
 
     /*On load, initialize a new array of cells and a priority queue.
@@ -28,7 +27,7 @@ public class WaveFunction : MonoBehaviour
     void Start()
     {
         if (debug) Debug.Log("Beginning Generation\n");
-        //if (backtrack) saveStack = new Stack<SaveState>();
+        if (backtrack) saveStack = new Stack<SaveState>();
         map = new Cell[size.x, size.y];
         pq = new PriorityQueue();
         iterations = 0;
@@ -201,67 +200,70 @@ public class WaveFunction : MonoBehaviour
             x = position.x;
             y = position.y;
             Cell target = map[x, y];
-            //Get the initial length of the cell's option list
-            int oldCount = target.Options.Length;
-            //Adjust the target's options list
-            List<Tile> newTileSet = new List<Tile>();
-            foreach (Tile t in target.Options)
+            if (!target.Collapsed)
             {
-                bool flag = true;
-                Tile[] options;
-
-                //If a tile does not match any of the options of its neighbors, remove it from the list.
-                //Ignore the cells on the boarders
-                if (x > 0 && flag)
+                //Get the initial length of the cell's option list
+                int oldCount = target.Options.Length;
+                //Adjust the target's options list
+                List<Tile> newTileSet = new List<Tile>();
+                foreach (Tile t in target.Options)
                 {
-                    flag = false;
-                    options = map[x - 1, y].Options;
-                    foreach (Tile o in options)
-                    {
-                        if (o.eastConnectionType.Equals(t.westConnectionType)) flag = true;
-                    }
-                }
-                if (x < size.x - 1 && flag)
-                {
-                    flag = false;
-                    options = map[x + 1, y].Options;
-                    foreach (Tile o in options)
-                    {
-                        if (o.westConnectionType.Equals(t.eastConnectionType)) flag = true;
-                    }
-                }
-                if (y > 0 && flag)
-                {
-                    flag = false;
-                    options = map[x, y - 1].Options;
-                    foreach (Tile o in options)
-                    {
-                        if (o.northConnectionType.Equals(t.southConnectionType)) flag = true;
-                    }
-                }
-                string northType = t.northConnectionType;
-                if (y < size.y - 1 && flag)
-                {
-                    flag = false;
-                    options = map[x, y + 1].Options;
-                    foreach (Tile o in options)
-                    {
-                        if (o.southConnectionType.Equals(t.northConnectionType)) flag = true;
-                    }
-                }
+                    bool flag = true;
+                    Tile[] options;
 
-                if (flag) newTileSet.Add(t);
-            }
-            target.Options = newTileSet.ToArray();
+                    //If a tile does not match any of the options of its neighbors, remove it from the list.
+                    //Ignore the cells on the boarders
+                    if (x > 0 && flag)
+                    {
+                        flag = false;
+                        options = map[x - 1, y].Options;
+                        foreach (Tile o in options)
+                        {
+                            if (o.eastConnectionType.Equals(t.westConnectionType)) flag = true;
+                        }
+                    }
+                    if (x < size.x - 1 && flag)
+                    {
+                        flag = false;
+                        options = map[x + 1, y].Options;
+                        foreach (Tile o in options)
+                        {
+                            if (o.westConnectionType.Equals(t.eastConnectionType)) flag = true;
+                        }
+                    }
+                    if (y > 0 && flag)
+                    {
+                        flag = false;
+                        options = map[x, y - 1].Options;
+                        foreach (Tile o in options)
+                        {
+                            if (o.northConnectionType.Equals(t.southConnectionType)) flag = true;
+                        }
+                    }
+                    string northType = t.northConnectionType;
+                    if (y < size.y - 1 && flag)
+                    {
+                        flag = false;
+                        options = map[x, y + 1].Options;
+                        foreach (Tile o in options)
+                        {
+                            if (o.southConnectionType.Equals(t.northConnectionType)) flag = true;
+                        }
+                    }
 
-            //If the current length is less than the old length, adjust its priority in the priority queue, then enqueue its surrounding nodes
-            if (oldCount < target.Options.Length)
-            {
+                    if (flag) newTileSet.Add(t);
+                }
+                target.Options = newTileSet.ToArray();
 
-                if (x > 0 && !map[x - 1, y].Collapsed) q.Enqueue(new Vector2Int(x - 1, y));
-                if (x < size.x - 1 && !map[x + 1, y].Collapsed) q.Enqueue(new Vector2Int(x + 1, y));
-                if (y > 0 && !map[x, y - 1].Collapsed) q.Enqueue(new Vector2Int(x, y - 1));
-                if (y < size.y - 1 && !map[x, y + 1].Collapsed) q.Enqueue(new Vector2Int(x, y + 1));
+                //If the current length is less than the old length, adjust its priority in the priority queue, then enqueue its surrounding nodes
+                if (oldCount > target.Options.Length)
+                {
+                    pq.AdjustPriority(position, target.Options.Length);
+                    if (x > 0 && !map[x - 1, y].Collapsed) q.Enqueue(new Vector2Int(x - 1, y));
+                    if (x < size.x - 1 && !map[x + 1, y].Collapsed) q.Enqueue(new Vector2Int(x + 1, y));
+                    if (y > 0 && !map[x, y - 1].Collapsed) q.Enqueue(new Vector2Int(x, y - 1));
+                    if (y < size.y - 1 && !map[x, y + 1].Collapsed) q.Enqueue(new Vector2Int(x, y + 1));
+                }
             }
         }
     }
