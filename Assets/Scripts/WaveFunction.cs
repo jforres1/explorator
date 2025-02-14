@@ -17,7 +17,9 @@ public class WaveFunction : MonoBehaviour
     public Vector2Int size;
     public int maximumIterations;
     Tile[] defaultTileSet;
+    float[][] weightTable = new float[2][];
     Cell[,] map;
+    int[,] weightMap;
     PriorityQueue pq;
     // Stack<SaveState> saveStack;
     int iterations;
@@ -33,6 +35,10 @@ public class WaveFunction : MonoBehaviour
         iterations = 0;
         TileSetOptions optionSet = gameObject.GetComponent<TileSetOptions>();
         defaultTileSet = optionSet.defaultTileSet;
+        weightTable[0] = optionSet.weightSet1;
+        weightTable[1] = optionSet.weightSet2;
+        WFCImageProcessor ip = gameObject.GetComponent<WFCImageProcessor>();
+        weightMap = ip.SampleImage();
         Generate();
     }
     void Generate()
@@ -77,10 +83,21 @@ public class WaveFunction : MonoBehaviour
         {
             for (int j = 0; j < size.y; j++)
             {
-                Cell cell = new Cell(false, defaultTileSet);
 
-                map[i, j] = cell;
-                pq.Enqueue(new Vector2Int(i, j), CalculateEntropy(cell.SoftMax()));
+                if (weightMap[i, j] == 0)
+                {
+                    Cell cell = new Cell(false, defaultTileSet);
+                    map[i, j] = cell;
+                    pq.Enqueue(new Vector2Int(i, j), CalculateEntropy(cell.SoftMax()));
+                }
+                else
+                {
+                    Cell cell = new Cell(false, defaultTileSet, weightTable[2 - weightMap[i, j]]);
+                    map[i, j] = cell;
+                    pq.Enqueue(new Vector2Int(i, j), CalculateEntropy(cell.SoftMax()));
+                }
+
+
             }
         }
     }
