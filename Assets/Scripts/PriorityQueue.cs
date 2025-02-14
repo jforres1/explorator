@@ -7,8 +7,8 @@ public class PriorityQueue
     private class Node
     {
         Vector2Int _position;
-        int _priority;
-        public Node(Vector2Int position, int priority)
+        float _priority;
+        public Node(Vector2Int position, float priority)
         {
             _position = position;
             _priority = priority;
@@ -17,7 +17,7 @@ public class PriorityQueue
         {
             get { return _position; }
         }
-        public int Priority
+        public float Priority
         {
             get { return _priority; }
             set { _priority = value; }
@@ -45,7 +45,7 @@ public class PriorityQueue
     }
     public PriorityQueue()
     {
-        capacity = 64;
+        capacity = 1;
         nodes = new Node[capacity];
         size = 0;
     }
@@ -55,11 +55,11 @@ public class PriorityQueue
     }
     public void Clear()
     {
-        capacity = 64;
+        capacity = 1;
         nodes = new Node[capacity];
         size = 0;
     }
-    public void Enqueue(Vector2Int position, int priority)
+    public void Enqueue(Vector2Int position, float priority)
     {
         size++;
         if (size > capacity) RaiseCapacity();
@@ -114,11 +114,11 @@ public class PriorityQueue
         while (index < size && !target.Equals(nodes[index].Position)) index++;
         if (index == size) return;
         size--;
-        if (size < (capacity / 2) && size > 64) LowerCapacity();
+        if (size < (capacity / 2) && size > 1) LowerCapacity();
         Swap(index, size);
         HeapDown(index);
     }
-    public void AdjustPriority(Vector2Int target, int priority)
+    public void AdjustPriority(Vector2Int target, float priority)
     {
         int index = 0;
         while (index < size && !target.Equals(nodes[index].Position)) index++;

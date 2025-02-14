@@ -1,4 +1,4 @@
-//using System;
+using System;
 //using System.Collections;
 using System.Collections.Generic;
 //using Unity.Mathematics;
@@ -12,14 +12,14 @@ using Random = UnityEngine.Random;
 public class WaveFunction : MonoBehaviour
 {
     public bool debug;
-    public bool backtrack;
+    // public bool backtrack;
 
     public Vector2Int size;
     public int maximumIterations;
     Tile[] defaultTileSet;
     Cell[,] map;
     PriorityQueue pq;
-    Stack<SaveState> saveStack;
+    // Stack<SaveState> saveStack;
     int iterations;
 
     /*On load, initialize a new array of cells and a priority queue.
@@ -27,7 +27,7 @@ public class WaveFunction : MonoBehaviour
     void Start()
     {
         if (debug) Debug.Log("Beginning Generation\n");
-        if (backtrack) saveStack = new Stack<SaveState>();
+        // if (backtrack) saveStack = new Stack<SaveState>();
         map = new Cell[size.x, size.y];
         pq = new PriorityQueue();
         iterations = 0;
@@ -80,7 +80,7 @@ public class WaveFunction : MonoBehaviour
                 Cell cell = new Cell(false, defaultTileSet);
 
                 map[i, j] = cell;
-                pq.Enqueue(new Vector2Int(i, j), cell.Options.Length);
+                pq.Enqueue(new Vector2Int(i, j), CalculateEntropy(cell.SoftMax()));
             }
         }
     }
@@ -126,19 +126,34 @@ public class WaveFunction : MonoBehaviour
             Tile selection;
             if (target.Options.Length == 0)
             {
+                // if (backtrack)
+                // {
+                //     if (saveStack.Length == 0) return false;
+                //     SaveState sv = saveStack.Pop();
+                //     map = sv.Map;
+                //     pq = sv.PQ;
+                //     // map[sv.Position.x, sv.Position.y].Options
+                // }
+                // else return false;
                 return false;
             }
-            else if (target.Options.Length == 1)
-            {
-                selection = target.Options[0];
-            }
+            // else if (target.Options.Length == 1)
+            // {
+            //     selection = target.Options[0];
+            //     target.Collapsed = true;
+            //     target.Options = new Tile[] { selection };
+            //     PropagateChange(cellLocation);
+            // }
             else
             {
-                selection = target.Options[Random.Range(0, target.Options.Length)];
+                // selection = target.Options[Random.Range(0, target.Options.Length)];
+                selection = target.GetRandomTile();
+                // if (backtrack) saveStack.Push(new SaveState(map, pq, cellLocation, selection));
+                target.Collapsed = true;
+                target.Options = new Tile[] { selection };
+                target.Weights = new float[] { 1.0f };
+                PropagateChange(cellLocation);
             }
-            target.Collapsed = true;
-            target.Options = new Tile[] { selection };
-            PropagateChange(cellLocation);
         }
         return true;
     }
@@ -206,8 +221,10 @@ public class WaveFunction : MonoBehaviour
                 int oldCount = target.Options.Length;
                 //Adjust the target's options list
                 List<Tile> newTileSet = new List<Tile>();
-                foreach (Tile t in target.Options)
+                List<float> newWeightSet = new List<float>();
+                for (int i = 0; i < target.Options.Length; i++)
                 {
+                    Tile t = target.Options[i];
                     bool flag = true;
                     Tile[] options;
 
@@ -251,14 +268,19 @@ public class WaveFunction : MonoBehaviour
                         }
                     }
 
-                    if (flag) newTileSet.Add(t);
+                    if (flag)
+                    {
+                        newTileSet.Add(t);
+                        newWeightSet.Add(target.Weights[i]);
+                    }
                 }
                 target.Options = newTileSet.ToArray();
+                target.Weights = newWeightSet.ToArray();
 
                 //If the current length is less than the old length, adjust its priority in the priority queue, then enqueue its surrounding nodes
                 if (oldCount > target.Options.Length)
                 {
-                    pq.AdjustPriority(position, target.Options.Length);
+                    pq.AdjustPriority(position, CalculateEntropy(target.SoftMax()));
                     if (x > 0 && !map[x - 1, y].Collapsed) q.Enqueue(new Vector2Int(x - 1, y));
                     if (x < size.x - 1 && !map[x + 1, y].Collapsed) q.Enqueue(new Vector2Int(x + 1, y));
                     if (y > 0 && !map[x, y - 1].Collapsed) q.Enqueue(new Vector2Int(x, y - 1));
@@ -266,5 +288,14 @@ public class WaveFunction : MonoBehaviour
                 }
             }
         }
+    }
+    float CalculateEntropy(float[] weights)
+    {
+        float entropy = 0;
+        foreach (float w in weights)
+        {
+            entropy -= (w * (float)Math.Log(w));
+        }
+        return entropy;
     }
 }
