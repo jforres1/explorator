@@ -1,19 +1,14 @@
 using System;
-//using System.Collections;
 using System.Collections.Generic;
-//using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-/*TODO: Separate the image processing into another class
-*Replace iteration generation system with a save state stack
+/*TODO:
 *Create more tilesets
 */
 public class WaveFunction : MonoBehaviour
 {
     public bool debug;
-    // public bool backtrack;
-
     public Vector2Int size;
     public int maximumIterations;
     Tile[] defaultTileSet;
@@ -21,7 +16,6 @@ public class WaveFunction : MonoBehaviour
     Cell[,] map;
     int[,] weightMap;
     PriorityQueue pq;
-    // Stack<SaveState> saveStack;
     int iterations;
 
     /*On load, initialize a new array of cells and a priority queue.
@@ -29,7 +23,6 @@ public class WaveFunction : MonoBehaviour
     void Start()
     {
         if (debug) Debug.Log("Beginning Generation\n");
-        // if (backtrack) saveStack = new Stack<SaveState>();
         map = new Cell[size.x, size.y];
         pq = new PriorityQueue();
         iterations = 0;
@@ -106,35 +99,6 @@ public class WaveFunction : MonoBehaviour
     */
     bool CollapseGrid()
     {
-        // bool finished = false;
-        // bool success = true;
-        // while (!finished && success)
-        // {
-        //     //Get an element that is not collapsed with the lowest entropy
-        //     //If there is no such element we can finish
-        //     Vector2Int cellLocation = GetLowestEntropy();
-        //     if (cellLocation.x == size.x && cellLocation.y == size.y)
-        //     {
-        //         if (debug) Debug.Log("Generation Succeeded\n");
-        //         finished = true;
-        //     }
-        //     //If generation fails and there is a cell with no possible options left
-        //     else if (cellLocation.x == -1 && cellLocation.y == -1)
-        //     {
-        //         if (debug) Debug.Log("Generation Failed...\n");
-        //         success = false;
-        //     }
-        //     else
-        //     {
-        //         //Perform operations on lowest entropy element
-        //         Cell target = map[cellLocation.x, cellLocation.y];
-        //         Tile selection = target.Options[Random.Range(0, target.Options.Length)];
-        //         target.Collapsed = true;
-        //         target.Options = new Tile[] { selection };
-        //         PropagateChange(cellLocation);
-        //     }
-        // }
-        // return success;
         Vector2Int cellLocation;
         while (pq.Count > 0)
         {
@@ -143,29 +107,11 @@ public class WaveFunction : MonoBehaviour
             Tile selection;
             if (target.Options.Length == 0)
             {
-                // if (backtrack)
-                // {
-                //     if (saveStack.Length == 0) return false;
-                //     SaveState sv = saveStack.Pop();
-                //     map = sv.Map;
-                //     pq = sv.PQ;
-                //     // map[sv.Position.x, sv.Position.y].Options
-                // }
-                // else return false;
                 return false;
             }
-            // else if (target.Options.Length == 1)
-            // {
-            //     selection = target.Options[0];
-            //     target.Collapsed = true;
-            //     target.Options = new Tile[] { selection };
-            //     PropagateChange(cellLocation);
-            // }
             else
             {
-                // selection = target.Options[Random.Range(0, target.Options.Length)];
                 selection = target.GetRandomTile();
-                // if (backtrack) saveStack.Push(new SaveState(map, pq, cellLocation, selection));
                 target.Collapsed = true;
                 target.Options = new Tile[] { selection };
                 target.Weights = new float[] { 1.0f };
@@ -174,46 +120,6 @@ public class WaveFunction : MonoBehaviour
         }
         return true;
     }
-
-    // Vector2Int GetLowestEntropy()
-    // {
-    //     List<Vector2Int> possibleSpaces = new List<Vector2Int>();
-    //     Cell temp = new Cell(false, defaultTileSet);
-    //     int lowest = defaultTileSet.Length;
-    //     //iterate through each cell in the map, adding its location to the list of possible spaces if it is one of the lowest entropies.
-    //     for (int i = 0; i < size.x; i++)
-    //     {
-    //         for (int j = 0; j < size.y; j++)
-    //         {
-    //             temp = map[i, j];
-    //             int count = temp.Options.Length;
-    //             if (count < lowest && !temp.Collapsed)
-    //             {
-    //                 //if there is a failure in generation and there are no more options we can stop here
-    //                 //Return (-1, -1) if there are no possible values.
-    //                 if (count == 0) return new Vector2Int(-1, -1);
-    //                 //otherwise
-    //                 possibleSpaces.Clear();
-    //                 possibleSpaces.Add(new Vector2Int(i, j));
-    //                 lowest = count;
-    //             }
-    //             else if (count == lowest && !temp.Collapsed)
-    //             {
-    //                 possibleSpaces.Add(new Vector2Int(i, j));
-    //             }
-    //         }
-    //     }
-    //     //Return one position from the list of possible options.
-    //     //Return a vector out of bounds if every position has been solved.
-    //     if (possibleSpaces.Count > 0)
-    //     {
-    //         return possibleSpaces[Random.Range(0, possibleSpaces.Count)];
-    //     }
-    //     else
-    //     {
-    //         return new Vector2Int(size.x, size.y);
-    //     }
-    // }
 
     void PropagateChange(Vector2Int location)
     {

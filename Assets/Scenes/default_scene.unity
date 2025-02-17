@@ -233,7 +233,7 @@ MonoBehaviour:
   - {fileID: 1743718961183649324, guid: 30472fd14c651ed44b930fb6f2db6131, type: 3}
   - {fileID: 3764455217556231395, guid: 8cb4b94b000695b4d8ed4a13c4c0c6f1, type: 3}
   weightSet1:
-  - 3
+  - 10
   - 1
   - 1
   - 1
@@ -257,7 +257,7 @@ MonoBehaviour:
   - 1
   - 1
   - 1
-  - 3
+  - 10
   weightSet3: []
   weightSet4: []
 --- !u!1 &2043125349

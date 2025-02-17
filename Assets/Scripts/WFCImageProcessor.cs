@@ -5,11 +5,6 @@ public class WFCImageProcessor : MonoBehaviour
     public Texture2D image;
     public int colorCount;
     public Vector2Int size;
-    // void Start()
-    // {
-    //     WaveFunction wfc = gameObject.GetComponent<WaveFunction>();
-    //     size = wfc.size;
-    // }
     public int[,] SampleImage()
     {
         int x = size.x;
