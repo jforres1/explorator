@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -145,55 +146,67 @@ public class WaveFunction : MonoBehaviour
                 //Adjust the target's options list
                 List<Tile> newTileSet = new List<Tile>();
                 List<float> newWeightSet = new List<float>();
+
+                //Make a set of compatible tags for each cardinal direction
+                HashSet<string> northTags = new HashSet<string>();
+                HashSet<string> southTags = new HashSet<string>();
+                HashSet<string> eastTags = new HashSet<string>();
+                HashSet<string> westTags = new HashSet<string>();
+                if (y < size.y - 1)
+                {
+                    foreach (Tile t in map[x, y + 1].Options)
+                    {
+                        northTags.UnionWith(t.southCompatibleTags);
+                    }
+                }
+                if (y > 0)
+                {
+                    foreach (Tile t in map[x, y - 1].Options)
+                    {
+                        southTags.UnionWith(t.northCompatibleTags);
+                    }
+                }
+                if (x < size.x - 1)
+                {
+                    foreach (Tile t in map[x + 1, y].Options)
+                    {
+                        eastTags.UnionWith(t.westCompatibleTags);
+                    }
+                }
+                if (x > 0)
+                {
+                    foreach (Tile t in map[x - 1, y].Options)
+                    {
+                        westTags.UnionWith(t.eastCompatibleTags);
+                    }
+                }
+
                 for (int i = 0; i < target.Options.Length; i++)
                 {
-                    Tile t = target.Options[i];
                     bool flag = true;
-                    Tile[] options;
-
-                    //If a tile does not match any of the options of its neighbors, remove it from the list.
-                    //Ignore the cells on the boarders
-                    if (x > 0 && flag)
+                    if (northTags.Count > 0 && flag)
                     {
                         flag = false;
-                        options = map[x - 1, y].Options;
-                        foreach (Tile o in options)
-                        {
-                            if (o.eastConnectionType.Equals(t.westConnectionType)) flag = true;
-                        }
+                        if (northTags.Overlaps(target.Options[i].tags)) flag = true;
                     }
-                    if (x < size.x - 1 && flag)
+                    if (southTags.Count > 0 && flag)
                     {
                         flag = false;
-                        options = map[x + 1, y].Options;
-                        foreach (Tile o in options)
-                        {
-                            if (o.westConnectionType.Equals(t.eastConnectionType)) flag = true;
-                        }
+                        if (southTags.Overlaps(target.Options[i].tags)) flag = true;
                     }
-                    if (y > 0 && flag)
+                    if (eastTags.Count > 0 && flag)
                     {
                         flag = false;
-                        options = map[x, y - 1].Options;
-                        foreach (Tile o in options)
-                        {
-                            if (o.northConnectionType.Equals(t.southConnectionType)) flag = true;
-                        }
+                        if (eastTags.Overlaps(target.Options[i].tags)) flag = true;
                     }
-                    string northType = t.northConnectionType;
-                    if (y < size.y - 1 && flag)
+                    if (westTags.Count > 0 && flag)
                     {
                         flag = false;
-                        options = map[x, y + 1].Options;
-                        foreach (Tile o in options)
-                        {
-                            if (o.southConnectionType.Equals(t.northConnectionType)) flag = true;
-                        }
+                        if (westTags.Overlaps(target.Options[i].tags)) flag = true;
                     }
-
                     if (flag)
                     {
-                        newTileSet.Add(t);
+                        newTileSet.Add(target.Options[i]);
                         newWeightSet.Add(target.Weights[i]);
                     }
                 }
@@ -212,6 +225,7 @@ public class WaveFunction : MonoBehaviour
             }
         }
     }
+
     float CalculateEntropy(float[] weights)
     {
         float entropy = 0;

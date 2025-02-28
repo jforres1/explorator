@@ -4,9 +4,10 @@ public class WFCImageProcessor : MonoBehaviour
 {
     public Texture2D image;
     public int colorCount;
-    public Vector2Int size;
+    //public Vector2Int size;
     public int[,] SampleImage()
     {
+        Vector2Int size = gameObject.GetComponent<WaveFunction>().size;
         int x = size.x;
         int y = size.y;
         int[,] ret = new int[x, y];
