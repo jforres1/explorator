@@ -13,9 +13,10 @@ public class WaveFunction : MonoBehaviour
     public Vector2Int size;
     public int maximumIterations;
     Tile[] defaultTileSet;
-    float[][] weightTable = new float[2][];
+    // float[][] weightTable = new float[2][];
     Cell[,] map;
-    int[,] weightMap;
+    WFCImageProcessor ip;
+    int[,] indexMap;
     PriorityQueue pq;
     int iterations;
 
@@ -27,12 +28,9 @@ public class WaveFunction : MonoBehaviour
         map = new Cell[size.x, size.y];
         pq = new PriorityQueue();
         iterations = 0;
-        TileSetOptions optionSet = gameObject.GetComponent<TileSetOptions>();
-        defaultTileSet = optionSet.defaultTileSet;
-        weightTable[0] = optionSet.weightSet1;
-        weightTable[1] = optionSet.weightSet2;
-        WFCImageProcessor ip = gameObject.GetComponent<WFCImageProcessor>();
-        weightMap = ip.SampleImage();
+        ip = gameObject.GetComponent<WFCImageProcessor>();
+        defaultTileSet = ip.tileSet;
+        indexMap = ip.SampleImage();
         Generate();
     }
     void Generate()
@@ -78,7 +76,7 @@ public class WaveFunction : MonoBehaviour
             for (int j = 0; j < size.y; j++)
             {
 
-                if (weightMap[i, j] == 0)
+                if (indexMap[i, j] == -1)
                 {
                     Cell cell = new Cell(false, defaultTileSet);
                     map[i, j] = cell;
@@ -86,7 +84,7 @@ public class WaveFunction : MonoBehaviour
                 }
                 else
                 {
-                    Cell cell = new Cell(false, defaultTileSet, weightTable[2 - weightMap[i, j]]);
+                    Cell cell = new Cell(false, defaultTileSet, ip.weightsBoundToColor[indexMap[i, j]].weights);
                     map[i, j] = cell;
                     pq.Enqueue(new Vector2Int(i, j), CalculateEntropy(cell.SoftMax()));
                 }
