@@ -1,36 +1,39 @@
 using System;
-using System.Linq;
+//using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 /*TODO:
-*Create more tilesets
 */
 public class WaveFunction : MonoBehaviour
 {
     public bool debug;
+    public bool cinematic;
+    public int seed;
     public Vector2Int size;
     public int maximumIterations;
+
     Tile[] defaultTileSet;
-    // float[][] weightTable = new float[2][];
     Cell[,] map;
     WFCImageProcessor ip;
-    int[,] indexMap;
     PriorityQueue pq;
+
     int iterations;
+    Queue<Vector2Int> instanceList;
 
     /*On load, initialize a new array of cells and a priority queue.
     */
     void Start()
     {
         if (debug) Debug.Log("Beginning Generation\n");
+        if (seed != 0) UnityEngine.Random.InitState(seed);
         map = new Cell[size.x, size.y];
         pq = new PriorityQueue();
         iterations = 0;
+        instanceList = new Queue<Vector2Int>();
         ip = gameObject.GetComponent<WFCImageProcessor>();
         defaultTileSet = ip.tileSet;
-        indexMap = ip.SampleImage();
         Generate();
     }
     void Generate()
@@ -44,6 +47,7 @@ public class WaveFunction : MonoBehaviour
             if (iterations < maximumIterations)
             {
                 pq.Clear();
+                instanceList.Clear();
                 Generate();
             }
             else
@@ -53,18 +57,20 @@ public class WaveFunction : MonoBehaviour
         }
         else
         {
-            InstantiateGrid();
+            StartCoroutine(InstantiateGrid());
         }
     }
-    void InstantiateGrid()
+    IEnumerator InstantiateGrid()
     {
-        for (int i = 0; i < size.x; i++)
+        while (instanceList.Count > 0)
         {
-            for (int j = 0; j < size.y; j++)
-            {
-                Instantiate(map[i, j].Options[0], new Vector2(i, j), Quaternion.identity);
-            }
+            if (cinematic) yield return 0;
+            Vector2Int location = instanceList.Dequeue();
+            int x = location.x;
+            int y = location.y;
+            Instantiate(map[x, y].Options[0], new Vector2(x, y), Quaternion.identity);
         }
+
     }
     /*To initialize the grid, iterate through the grid length and height.
     *Create a new cell for each i, j entry, and add each cell to the grid and list.
@@ -75,21 +81,9 @@ public class WaveFunction : MonoBehaviour
         {
             for (int j = 0; j < size.y; j++)
             {
-
-                if (indexMap[i, j] == -1)
-                {
-                    Cell cell = new Cell(false, defaultTileSet);
-                    map[i, j] = cell;
-                    pq.Enqueue(new Vector2Int(i, j), CalculateEntropy(cell.SoftMax()));
-                }
-                else
-                {
-                    Cell cell = new Cell(false, defaultTileSet, ip.weightsBoundToColor[indexMap[i, j]].weights);
-                    map[i, j] = cell;
-                    pq.Enqueue(new Vector2Int(i, j), CalculateEntropy(cell.SoftMax()));
-                }
-
-
+                Cell cell = new Cell(false, defaultTileSet, ip.SampleImage(i, j));
+                map[i, j] = cell;
+                pq.Enqueue(new Vector2Int(i, j), CalculateEntropy(cell.SoftMax()));
             }
         }
     }
@@ -114,6 +108,7 @@ public class WaveFunction : MonoBehaviour
                 target.Collapsed = true;
                 target.Options = new Tile[] { selection };
                 target.Weights = new float[] { 1.0f };
+                instanceList.Enqueue(cellLocation);
                 PropagateChange(cellLocation);
             }
         }

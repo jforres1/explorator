@@ -7,22 +7,22 @@ public class Cell
     bool collapsed;
     Tile[] options;
     float[] weights;
-
-    public Cell(bool state, Tile[] tiles)
-    {
-        collapsed = state;
-        options = tiles;
-        weights = new float[tiles.Length];
-        for (int i = 0; i < weights.Length; i++)
-        {
-            weights[i] = 1.0f;
-        }
-    }
     public Cell(bool state, Tile[] tiles, float[] w)
     {
         collapsed = state;
         options = tiles;
-        weights = w;
+        if (w.Length == 0)
+        {
+            weights = new float[tiles.Length];
+            for (int i = 0; i < weights.Length; i++)
+            {
+                weights[i] = 1.0f;
+            }
+        }
+        else
+        {
+            weights = w;
+        }
     }
     public bool Collapsed
     {
