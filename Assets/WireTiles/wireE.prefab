@@ -100,7 +100,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa33388480a1f704495d6e1f708f7da8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  northConnectionType: 0
-  southConnectionType: 0
-  westConnectionType: 0
-  eastConnectionType: 0
+  tags:
+  - n0
+  - s0
+  - w0
+  - e0
+  northCompatibleTags:
+  - s0
+  southCompatibleTags:
+  - n0
+  westCompatibleTags:
+  - e0
+  eastCompatibleTags:
+  - w0
